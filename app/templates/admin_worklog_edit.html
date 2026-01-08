@@ -1,0 +1,51 @@
+{% extends "admin_base.html" %}
+{% block content %}
+
+<h2>근무 기록 수정</h2>
+
+<form method="POST">
+    <label>직원</label>
+    <select name="user_id" required>
+        {% for u in users %}
+        <option value="{{ u.id }}"
+            {% if selected_user == u.id %}selected{% endif %}>
+            {{ u.username }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label>근무 날짜</label>
+    <input type="date"
+           name="work_date"
+           value="{{ selected_date if selected_date }}"
+           required>
+
+    <button type="submit">조회</button>
+</form>
+
+{% if record %}
+<hr>
+
+<form method="POST">
+    <!-- 조회 조건 유지 -->
+    <input type="hidden" name="user_id" value="{{ selected_user }}">
+    <input type="hidden" name="work_date" value="{{ selected_date }}">
+
+    <label>출근 시간</label>
+    <input type="time"
+           name="start_time"
+           value="{{ record.start_time.strftime('%H:%M') }}"
+           required>
+
+    <label>퇴근 시간</label>
+    <input type="time"
+           name="end_time"
+           value="{{ record.end_time.strftime('%H:%M') }}"
+           required>
+
+    <button type="submit">수정 저장</button>
+</form>
+{% endif %}
+
+
+{% endblock %}
