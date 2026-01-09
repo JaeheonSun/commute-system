@@ -209,3 +209,49 @@ def edit_worklog_by_query():
         selected_date=selected_date
     )
 
+
+@admin_bp.route("/user/update", methods=["POST"])
+@login_required
+@admin_required
+def update_user():
+    user_id = request.form["user_id"]
+    new_username = request.form.get("username")
+    new_password = request.form.get("password")
+
+    user = User.query.get_or_404(user_id)
+
+    # 관리자 username 변경 방지하고 싶으면 여기서 체크 가능
+    if new_username:
+        existing = User.query.filter(
+            User.username == new_username,
+            User.id != user.id
+        ).first()
+        if existing:
+            flash("이미 존재하는 username입니다.")
+            return redirect(url_for("admin.dashboard"))
+
+        user.username = new_username
+
+    if new_password:
+        user.password_hash = generate_password_hash(new_password)
+
+    db.session.commit()
+    flash("유저 정보가 수정되었습니다.")
+    return redirect(url_for("admin.dashboard"))
+
+
+@admin_bp.route("/user/delete/<int:user_id>", methods=["POST"])
+@login_required
+@admin_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+
+    if user.role == "admin":
+        flash("관리자 계정은 삭제할 수 없습니다.")
+        return redirect(url_for("admin.dashboard"))
+
+    db.session.delete(user)
+    db.session.commit()
+
+    flash("유저가 삭제되었습니다.")
+    return redirect(url_for("admin.dashboard"))

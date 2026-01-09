@@ -39,11 +39,32 @@
                 <td>{{ u.id }}</td>
                 <td>{{ u.username }}</td>
                 <td>{{ u.role }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('admin.update_user') }}">
+                        <input type="hidden" name="user_id" value="{{ u.id }}">
+                        <input type="text" name="username" placeholder="새 username">
+                        <input type="password" name="password" placeholder="새 password">
+                        <button type="submit">수정</button>
+                    </form>
+                </td>
+
+                <td>
+                    {% if u.role != "admin" %}
+                        <form method="POST"
+                            action="{{ url_for('admin.delete_user', user_id=u.id) }}"
+                            onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                            <button type="submit">삭제</button>
+                        </form>
+                    {% else %}
+                        관리자
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
 </div>
+
 
 {% endblock %}
