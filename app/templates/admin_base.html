@@ -1,38 +1,106 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>관리자 페이지</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet">
-    
-    <nav class="navbar navbar-dark bg-dark px-3">
-        <span class="navbar-brand">관리자 페이지</span>
-        <a href="{{ url_for('admin.work_summary') }}" class="btn btn-light btn-sm">
-            근무 시간 요약
-        </a>
-        <a href="{{ url_for('admin.add_worklog') }}" class="btn btn-light btn-sm">
-            근무 기록 추가
-        </a>
-        <a href="{{ url_for('admin.edit_worklog_by_query') }}" class="btn btn-light btn-sm">
-            근무 기록 수정
-        </a>
-        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-light btn-sm">
-            관리자 홈
-        </a>
-        <a href="{{ url_for('attendance.dashboard') }}" class="btn btn-light btn-sm">
-            대시보드
-        </a>
-    </nav>
+  <meta charset="utf-8">
+  <title>{% block title %}Admin{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='adminlte/plugins/fontawesome-free/css/all.min.css') }}">
+
+  <!-- AdminLTE CSS -->
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='adminlte/css/adminlte.min.css') }}">
+
+  {% block extra_css %}{% endblock %}
 </head>
-<body>
 
-    <div id="content">
-        {% block content %}
-        <!-- 자식 템플릿 -->
-        {% endblock %}
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- 🔹 Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>
+
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">
+          <i class="fas fa-sign-out-alt"></i> 로그아웃
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- 🔹 Sidebar -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a href="{{ url_for('admin.dashboard') }}" class="brand-link">
+      <span class="brand-text font-weight-light ml-3">출퇴근 관리 시스템</span>
+    </a>
+
+    <div class="sidebar">
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" role="menu">
+
+          <li class="nav-item">
+            <a href="{{ url_for('admin.dashboard') }}" class="nav-link">
+              <i class="nav-icon fas fa-chart-line"></i>
+              <p>대시보드</p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="{{ url_for('admin.work_summary') }}" class="nav-link">
+              <i class="nav-icon fas fa-calendar-alt"></i>
+              <p>근무 기록 요약</p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="{{ url_for('admin.add_worklog') }}" class="nav-link">
+              <i class="nav-icon fas fa-edit"></i>
+              <p>새 근무 기록 추가</p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="{{ url_for('admin.edit_worklog_by_query') }}" class="nav-link">
+              <i class="nav-icon fas fa-edit"></i>
+              <p>기존 근무 기록 수정</p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="{{ url_for('attendance.dashboard') }}" class="nav-link">
+              <i class="nav-icon fas fa-edit"></i>
+              <p>관리자 메뉴 나가기</p>
+            </a>
+          </li>
+
+        </ul>
+      </nav>
     </div>
+  </aside>
 
+  <!-- 🔹 Content -->
+  <div class="content-wrapper">
+    <section class="content pt-3">
+      <div class="container-fluid">
+        {% block content %}{% endblock %}
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- 🔹 Scripts -->
+<script src="{{ url_for('static', filename='adminlte/plugins/jquery/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='adminlte/js/adminlte.min.js') }}"></script>
+
+{% block extra_js %}{% endblock %}
 </body>
 </html>
