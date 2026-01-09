@@ -28,6 +28,7 @@ def create_user():
     role = request.form["role"]
 
     if User.query.filter_by(username=username).first():
+        flash("이미 존재하는 username입니다.", "warning")
         return redirect(url_for("admin.dashboard"))
 
     user = User(
@@ -109,7 +110,7 @@ def add_worklog():
         end_dt = datetime.combine(work_date, end_t)
 
         if end_dt <= start_dt:
-            flash("퇴근 시간은 출근 시간보다 이후여야 합니다.")
+            flash("퇴근 시간은 출근 시간보다 이후여야 합니다.", "warning")
             return redirect(request.url)
         
         existing = WorkLog.query.filter_by(
@@ -118,7 +119,7 @@ def add_worklog():
         ).first()
 
         if existing:
-            flash("이미 해당 날짜의 근무 기록이 존재합니다.")
+            flash("이미 해당 날짜의 근무 기록이 존재합니다.", "error")
             return redirect(request.url)
 
         worklog = WorkLog(
@@ -135,7 +136,7 @@ def add_worklog():
         db.session.add(worklog)
         db.session.commit()
 
-        flash("근무 기록이 추가되었습니다.")
+        flash("근무 기록이 추가되었습니다.", "success")
         return redirect(url_for("admin.dashboard"))
 
     return render_template(
@@ -167,7 +168,7 @@ def edit_worklog_by_query():
         ).first()
 
         if not record:
-            flash("해당 날짜의 근무 기록이 없습니다.")
+            flash("해당 날짜의 근무 기록이 없습니다.", "error")
             return render_template(
                 "admin_worklog_edit.html",
                 users=users,
@@ -189,7 +190,7 @@ def edit_worklog_by_query():
             end_dt = datetime.combine(selected_date, end_time)
 
             if end_dt <= start_dt:
-                flash("퇴근 시간은 출근 시간보다 이후여야 합니다.")
+                flash("퇴근 시간은 출근 시간보다 이후여야 합니다.", "warning")
                 return redirect(request.url)
 
             record.start_time = start_dt
@@ -198,7 +199,7 @@ def edit_worklog_by_query():
             calculate_work_time(record)
             db.session.commit()
 
-            flash("근무 기록이 수정되었습니다.")
+            flash("근무 기록이 수정되었습니다.", "success")
             return redirect(url_for("admin.dashboard"))
 
     return render_template(
@@ -227,7 +228,7 @@ def update_user():
             User.id != user.id
         ).first()
         if existing:
-            flash("이미 존재하는 username입니다.")
+            flash("이미 존재하는 username입니다.", "warning")
             return redirect(url_for("admin.dashboard"))
 
         user.username = new_username
@@ -236,7 +237,7 @@ def update_user():
         user.password_hash = generate_password_hash(new_password)
 
     db.session.commit()
-    flash("유저 정보가 수정되었습니다.")
+    flash("유저 정보가 수정되었습니다.", "success")
     return redirect(url_for("admin.dashboard"))
 
 
@@ -247,11 +248,11 @@ def delete_user(user_id):
     user = User.query.get_or_404(user_id)
 
     if user.role == "admin":
-        flash("관리자 계정은 삭제할 수 없습니다.")
+        flash("관리자 계정은 삭제할 수 없습니다.", "error")
         return redirect(url_for("admin.dashboard"))
 
     db.session.delete(user)
     db.session.commit()
 
-    flash("유저가 삭제되었습니다.")
+    flash("유저가 삭제되었습니다.", "success")
     return redirect(url_for("admin.dashboard"))
