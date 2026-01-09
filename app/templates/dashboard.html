@@ -1,59 +1,99 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>대시보드</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet">
-</head>
-<body>
+  <meta charset="UTF-8">
+  <title>출퇴근 대시보드</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<nav class="navbar navbar-light bg-light px-3">
-    <span class="navbar-brand">출퇴근 시스템</span>
+  <!-- Bootstrap 4 (AdminLTE와 동일 계열) -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body class="bg-light">
+
+<!-- 🔹 Navbar -->
+<nav class="navbar navbar-expand navbar-white bg-white shadow-sm px-3">
+  <span class="navbar-brand font-weight-bold">
+    출퇴근 관리 시스템
+  </span>
+
+  <div class="ml-auto d-flex align-items-center">
     {% if current_user.is_authenticated and current_user.role == "admin" %}
-        <a href="{{ url_for('admin.dashboard') }}"
-            style="padding:8px 12px; background:#f39c12; color:white; border-radius:4px; text-decoration:none;">
-            관리자 페이지
-        </a>
+      <a href="{{ url_for('admin.dashboard') }}" class="btn btn-warning btn-sm mr-2">
+        관리자 페이지
+      </a>
     {% endif %}
+
     <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-secondary btn-sm">
-        로그아웃
+      로그아웃
     </a>
+  </div>
 </nav>
 
+<!-- 🔹 Main -->
 <div class="container mt-4">
-    <h4>안녕하세요, {{ current_user.username }}님</h4>
 
-    <div class="card mt-3">
-        <div class="card-body">
-            <h5>오늘 출퇴근</h5>
-
-            {% if not record %}
-                <a href="{{ url_for('attendance.check_in') }}"
-                   class="btn btn-success mt-2">
-                    출근
-                </a>
-            {% else %}
-                <p class="mt-2">
-                    출근 시간:
-                    {{ record.check_in.strftime('%H:%M:%S') if record.check_in }}
-                </p>
-
-                {% if not record.check_out %}
-                    <a href="{{ url_for('attendance.check_out') }}"
-                       class="btn btn-danger">
-                        퇴근
-                    </a>
-                {% else %}
-                    <p>
-                        퇴근 시간:
-                        {{ record.check_out.strftime('%H:%M:%S') }}
-                    </p>
-                {% endif %}
-            {% endif %}
-        </div>
+  <!-- 인사 카드 -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="mb-0">
+        👋 안녕하세요, <strong>{{ current_user.username }}</strong>님
+      </h5>
     </div>
+  </div>
+
+  <!-- 오늘 근무 상태 -->
+  <div class="card text-center">
+    <div class="card-header bg-primary text-white">
+      오늘의 출퇴근 기록
+    </div>
+
+    <div class="card-body">
+
+      {% if not record %}
+        <p class="text-muted mb-3">
+          아직 출근 기록이 없습니다.
+        </p>
+        <a href="{{ url_for('attendance.check_in') }}"
+           class="btn btn-success btn-lg">
+          <i class="fas fa-sign-in-alt"></i> 출근
+        </a>
+
+      {% else %}
+        <p class="mb-2">
+          ⏰ 출근 시간 :
+          <strong>
+            {{ record.check_in.strftime('%H:%M:%S') if record.check_in }}
+          </strong>
+        </p>
+
+        {% if not record.check_out %}
+          <a href="{{ url_for('attendance.check_out') }}"
+             class="btn btn-danger btn-lg mt-2">
+            <i class="fas fa-sign-out-alt"></i> 퇴근
+          </a>
+        {% else %}
+          <p class="mt-3 text-success">
+            ✅ 퇴근 완료
+          </p>
+          <p>
+            ⏰ 퇴근 시간 :
+            <strong>
+              {{ record.check_out.strftime('%H:%M:%S') }}
+            </strong>
+          </p>
+        {% endif %}
+
+      {% endif %}
+
+    </div>
+  </div>
+
 </div>
 
 </body>

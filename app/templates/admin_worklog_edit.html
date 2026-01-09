@@ -1,51 +1,110 @@
 {% extends "admin_base.html" %}
+
+{% block title %}근무 기록 수정{% endblock %}
+
 {% block content %}
 
-<h2>근무 기록 수정</h2>
+<div class="row">
 
-<form method="POST">
-    <label>직원</label>
-    <select name="user_id" required>
-        {% for u in users %}
-        <option value="{{ u.id }}"
-            {% if selected_user == u.id %}selected{% endif %}>
-            {{ u.username }}
-        </option>
-        {% endfor %}
-    </select>
+  <!-- 🔹 조회 카드 -->
+  <div class="col-md-12">
+    <div class="card card-info">
+      <div class="card-header">
+        <h3 class="card-title">근무 기록 조회</h3>
+      </div>
 
-    <label>근무 날짜</label>
-    <input type="date"
-           name="work_date"
-           value="{{ selected_date if selected_date }}"
-           required>
+      <form method="POST">
+        <div class="card-body">
+          <div class="row">
 
-    <button type="submit">조회</button>
-</form>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>직원</label>
+                <select name="user_id" class="form-control" required>
+                  {% for u in users %}
+                  <option value="{{ u.id }}"
+                    {% if selected_user == u.id %}selected{% endif %}>
+                    {{ u.username }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
 
-{% if record %}
-<hr>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>근무 날짜</label>
+                <input type="date"
+                       name="work_date"
+                       class="form-control"
+                       value="{{ selected_date if selected_date }}"
+                       required>
+              </div>
+            </div>
 
-<form method="POST">
-    <!-- 조회 조건 유지 -->
-    <input type="hidden" name="user_id" value="{{ selected_user }}">
-    <input type="hidden" name="work_date" value="{{ selected_date }}">
+          </div>
+        </div>
 
-    <label>출근 시간</label>
-    <input type="time"
-           name="start_time"
-           value="{{ record.start_time.strftime('%H:%M') }}"
-           required>
+        <div class="card-footer text-right">
+          <button type="submit" class="btn btn-info">
+            <i class="fas fa-search"></i> 조회
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    <label>퇴근 시간</label>
-    <input type="time"
-           name="end_time"
-           value="{{ record.end_time.strftime('%H:%M') }}"
-           required>
+  {% if record %}
+  <!-- 🔹 수정 카드 -->
+  <div class="col-md-12">
+    <div class="card card-warning">
+      <div class="card-header">
+        <h3 class="card-title">근무 기록 수정</h3>
+      </div>
 
-    <button type="submit">수정 저장</button>
-</form>
-{% endif %}
+      <form method="POST">
+        <!-- 조회 조건 유지 -->
+        <input type="hidden" name="user_id" value="{{ selected_user }}">
+        <input type="hidden" name="work_date" value="{{ selected_date }}">
 
+        <div class="card-body">
+          <div class="row">
+
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>출근 시간</label>
+                <input type="time"
+                       name="start_time"
+                       class="form-control"
+                       value="{{ record.start_time.strftime('%H:%M') }}"
+                       required>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>퇴근 시간</label>
+                <input type="time"
+                       name="end_time"
+                       class="form-control"
+                       value="{{ record.end_time.strftime('%H:%M') }}"
+                       required>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="card-footer text-right">
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> 수정 저장
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
 
 {% endblock %}

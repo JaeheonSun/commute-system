@@ -48,7 +48,7 @@ def check_out():
 
         start_dt = datetime.combine(today, record.check_in)
         total_minutes, overtime_minutes = calculate_work_minutes(
-            start_dt, end_time
+            start_dt, end_time, today
         )
 
         worklog = WorkLog(
