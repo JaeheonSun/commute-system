@@ -67,7 +67,7 @@ def work_summary():
             func.sum(WorkLog.total_minutes).label("total_minutes"),
             func.sum(WorkLog.overtime_minutes).label("overtime_minutes"),
         )
-        .join(WorkLog)
+        .join(WorkLog, WorkLog.user_id == User.id)
         .filter(extract("year", WorkLog.work_date) == year)
     )
 
@@ -92,6 +92,7 @@ def add_worklog():
 
     if request.method == "POST":
         user_id = request.form["user_id"]
+        user = User.query.get(int(user_id))
 
         work_date = datetime.strptime(
             request.form["work_date"], "%Y-%m-%d"
@@ -123,6 +124,7 @@ def add_worklog():
 
         worklog = WorkLog(
             user_id=user_id,
+            username = user.username,
             work_date=work_date,
             start_time=start_t,
             end_time=end_t,

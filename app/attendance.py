@@ -25,6 +25,7 @@ def check_in():
     if not record:
         record = WorkLog(
             user_id=current_user.id,
+            username=current_user.username,
             work_date=today,
             start_time=now_kst().time()
         )
