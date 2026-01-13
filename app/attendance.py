@@ -43,8 +43,8 @@ def check_out():
     ).first()
 
     if record and not record.end_time:
-        end_time = now_kst()
-        record.end_time = end_time.time()
+        end_time = now_kst().time()
+        record.end_time = end_time
 
         record.total_minutes, record.overtime_minutes = calculate_work_minutes(
             record.start_time, end_time, today
