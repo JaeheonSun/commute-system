@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
 from datetime import date, datetime, timedelta
-from .models import Attendance, WorkLog
+from .models import WorkLog
 from .services import calculate_work_minutes, now_kst
 
 from . import db
@@ -13,7 +13,7 @@ attendance_bp = Blueprint("attendance", __name__)
 def dashboard():
     auto_checkout_if_needed(current_user.id)
     today = date.today()
-    record = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
+    record = WorkLog.query.filter_by(user_id=current_user.id, work_date=today).first()
     return render_template("dashboard.html", record=record)
 
 
@@ -21,12 +21,12 @@ def dashboard():
 @login_required
 def check_in():
     today = date.today()
-    record = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
+    record = WorkLog.query.filter_by(user_id=current_user.id, work_date=today).first()
     if not record:
-        record = Attendance(
+        record = WorkLog(
             user_id=current_user.id,
-            date=today,
-            check_in=now_kst().time()
+            work_date=today,
+            start_time=now_kst().time()
         )
         db.session.add(record)
         db.session.commit()
@@ -37,9 +37,9 @@ def check_in():
 @login_required
 def check_out():
     today = date.today()
-    record = Attendance.query.filter_by(
+    record = WorkLog.query.filter_by(
         user_id=current_user.id,
-        date=today
+        work_date=today
     ).first()
 
     if record and not record.check_out:
@@ -69,10 +69,10 @@ def check_out():
 def auto_checkout_if_needed(user_id):
     yesterday = date.today() - timedelta(days=1)
 
-    record = Attendance.query.filter(
-        Attendance.user_id == user_id,
-        Attendance.date <= yesterday,
-        Attendance.check_out.is_(None)
+    record = WorkLog.query.filter(
+        WorkLog.user_id == user_id,
+        WorkLog.work_date <= yesterday,
+        WorkLog.end_time.is_(None)
     ).first()
 
     if record:
@@ -80,22 +80,12 @@ def auto_checkout_if_needed(user_id):
 
         end_dt = check_in_dt + timedelta(hours=9)
 
-        record.check_out = end_dt.time()
+        record.end_time = end_dt.time()
 
         start_dt = datetime.combine(record.date, record.check_in)
 
-        total_minutes, overtime_minutes = calculate_work_minutes(
+        record.total_minutes, record.overtime_minutes = calculate_work_minutes(
             start_dt, end_dt
         )
 
-        worklog = WorkLog(
-            user_id=user_id,
-            work_date=record.date,
-            start_time=start_dt,
-            end_time=end_dt,
-            total_minutes=total_minutes,
-            overtime_minutes=overtime_minutes
-        )
-
-        db.session.add(worklog)
         db.session.commit()

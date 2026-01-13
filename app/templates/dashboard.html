@@ -68,11 +68,11 @@
         <p class="mb-2">
           ⏰ 출근 시간 :
           <strong>
-            {{ record.check_in.strftime('%H:%M:%S') if record.check_in }}
+            {{ record.start_time.strftime('%H:%M:%S') if record.start_time }}
           </strong>
         </p>
 
-        {% if not record.check_out %}
+        {% if not record.end_time %}
           <a href="{{ url_for('attendance.check_out') }}"
              class="btn btn-danger btn-lg mt-2">
             <i class="fas fa-sign-out-alt"></i> 퇴근
@@ -84,7 +84,7 @@
           <p>
             ⏰ 퇴근 시간 :
             <strong>
-              {{ record.check_out.strftime('%H:%M:%S') }}
+              {{ record.end_time.strftime('%H:%M:%S') }}
             </strong>
           </p>
         {% endif %}

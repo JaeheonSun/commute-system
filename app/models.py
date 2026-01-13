@@ -12,15 +12,6 @@ class User(UserMixin, db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-
-class Attendance(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    date = db.Column(db.Date, nullable=False)
-    check_in = db.Column(db.Time)
-    check_out = db.Column(db.Time)
-
-
 class WorkLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -29,4 +20,3 @@ class WorkLog(db.Model):
     end_time = db.Column(db.DateTime, nullable=False)
     total_minutes = db.Column(db.Integer, nullable=False)
     overtime_minutes = db.Column(db.Integer, nullable=False)
-
