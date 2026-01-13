@@ -20,12 +20,6 @@ def is_weekend(date):
 STANDARD_WORK_MINUTES = 9 * 60
 
 def calculate_work_minutes(start_dt, end_dt, work_date):
-    if start_dt.tzinfo is None:
-        start_dt = start_dt.replace(tzinfo=KST)
-
-    if end_dt.tzinfo is None:
-        end_dt = end_dt.replace(tzinfo=KST)
-
     total_minutes = int((end_dt - start_dt).total_seconds() // 60)
 
     if is_weekend(work_date) or is_holiday(work_date):
