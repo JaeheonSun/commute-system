@@ -59,7 +59,7 @@
   <div class="col-md-12">
     <div class="card card-warning">
       <div class="card-header">
-        <h3 class="card-title">근무 기록 수정</h3>
+        <h3 class="card-title">근무 기록 수정/삭제</h3>
       </div>
 
       <form method="POST">
@@ -98,7 +98,7 @@
         <div class="card-footer d-flex justify-content-between">
           <!-- 🔴 삭제 버튼 -->
           <form method="POST"
-                action="{{ url_for('admin_bp.delete_worklog') }}"
+                action="{{ url_for('admin.delete_worklog') }}"
                 onsubmit="return confirm('정말 이 근무 기록을 삭제하시겠습니까?');">
             <input type="hidden" name="user_id" value="{{ selected_user }}">
             <input type="hidden" name="work_date" value="{{ selected_date }}">
