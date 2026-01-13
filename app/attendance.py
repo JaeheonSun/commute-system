@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
 from datetime import date, datetime, timedelta
 from .models import Attendance, WorkLog
-from .services import calculate_work_minutes
+from .services import calculate_work_minutes, now_kst
 
 from . import db
 
@@ -26,7 +26,7 @@ def check_in():
         record = Attendance(
             user_id=current_user.id,
             date=today,
-            check_in=datetime.now().time()
+            check_in=now_kst.time()
         )
         db.session.add(record)
         db.session.commit()
@@ -43,7 +43,7 @@ def check_out():
     ).first()
 
     if record and not record.check_out:
-        end_time = datetime.now()
+        end_time = now_kst()
         record.check_out = end_time.time()
 
         start_dt = datetime.combine(today, record.check_in)

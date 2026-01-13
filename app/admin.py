@@ -1,13 +1,12 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required
 from werkzeug.security import generate_password_hash
-from .models import User, Attendance, WorkLog
+from .models import User, WorkLog
 from . import db
 from .utils import admin_required
-from datetime import datetime, timedelta
+from datetime import datetime
 from sqlalchemy import extract, func
-from .services import calculate_work_time
-
+from .services import calculate_work_time, now_kst
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -50,7 +49,7 @@ def work_summary():
     month = request.args.get("month", type=int)
 
     if not year:
-        year = datetime.now().year
+        year = now_kst().year
 
     # 🔹 연도 목록 (드롭다운용)
     years = (

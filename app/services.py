@@ -1,4 +1,12 @@
 import holidays
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+KST = ZoneInfo("Asia/Seoul")
+
+def now_kst():
+    return datetime.now(KST)
+
 kr_holidays = holidays.KR()
 
 def is_holiday(date):
