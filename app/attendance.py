@@ -42,25 +42,14 @@ def check_out():
         work_date=today
     ).first()
 
-    if record and not record.check_out:
+    if record and not record.end_time:
         end_time = now_kst()
-        record.check_out = end_time.time()
+        record.end_time = end_time.time()
 
-        start_dt = datetime.combine(today, record.check_in)
-        total_minutes, overtime_minutes = calculate_work_minutes(
-            start_dt, end_time, today
+        record.total_minutes, record.overtime_minutes = calculate_work_minutes(
+            record.start_time, end_time, today
         )
 
-        worklog = WorkLog(
-            user_id=current_user.id,
-            work_date=today,
-            start_time=start_dt,
-            end_time=end_time,
-            total_minutes=total_minutes,
-            overtime_minutes=overtime_minutes
-        )
-
-        db.session.add(worklog)
         db.session.commit()
 
     return redirect(url_for("attendance.dashboard"))
@@ -76,16 +65,14 @@ def auto_checkout_if_needed(user_id):
     ).first()
 
     if record:
-        check_in_dt = datetime.combine(record.date, record.check_in)
+        check_in_dt = datetime.combine(record.date, record.start_time)
 
         end_dt = check_in_dt + timedelta(hours=9)
 
         record.end_time = end_dt.time()
 
-        start_dt = datetime.combine(record.date, record.check_in)
-
         record.total_minutes, record.overtime_minutes = calculate_work_minutes(
-            start_dt, end_dt
+            record.start_time, record.end_time, record.work_date
         )
 
         db.session.commit()
