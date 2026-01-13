@@ -61,37 +61,6 @@
       <div class="card-header">
         <h3 class="card-title">근무 기록 수정/삭제</h3>
       </div>
-      <!-- 조회 조건 유지 -->
-      <input type="hidden" name="user_id" value="{{ selected_user }}">
-      <input type="hidden" name="work_date" value="{{ selected_date }}">
-
-      <div class="card-body">
-        <div class="row">
-
-          <div class="col-md-3">
-            <div class="form-group">
-              <label>출근 시간</label>
-              <input type="time"
-                      name="start_time"
-                      class="form-control"
-                      value="{{ record.start_time.strftime('%H:%M') }}"
-                      required>
-            </div>
-          </div>
-
-          <div class="col-md-3">
-            <div class="form-group">
-              <label>퇴근 시간</label>
-              <input type="time"
-                      name="end_time"
-                      class="form-control"
-                      value="{{ record.end_time.strftime('%H:%M') if record.end_time else '' }}"
-                      required>
-            </div>
-          </div>
-
-        </div>
-      </div>
 
       <div class="card-footer bg-white d-flex justify-content-end align-items-center">
         <!-- 🟢 수정 form -->
@@ -100,6 +69,33 @@
               class="mr-2">
           <input type="hidden" name="user_id" value="{{ selected_user }}">
           <input type="hidden" name="work_date" value="{{ selected_date }}">
+          <div class="card-body">
+            <div class="row">
+
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label>출근 시간</label>
+                  <input type="time"
+                          name="start_time"
+                          class="form-control"
+                          value="{{ record.start_time.strftime('%H:%M') }}"
+                          required>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label>퇴근 시간</label>
+                  <input type="time"
+                          name="end_time"
+                          class="form-control"
+                          value="{{ record.end_time.strftime('%H:%M') if record.end_time else '' }}"
+                          required>
+                </div>
+              </div>
+
+            </div>
+          </div>
           <button type="submit" class="btn btn-success">
             <i class="fas fa-save"></i> 저장
           </button>
