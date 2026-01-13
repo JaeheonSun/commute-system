@@ -95,23 +95,22 @@
           </div>
         </div>
 
-        <div class="card-footer d-flex justify-content-between">
-          <!-- 🔴 삭제 버튼 -->
-          <form method="POST"
-                action="{{ url_for('admin.delete_worklog') }}"
-                onsubmit="return confirm('정말 이 근무 기록을 삭제하시겠습니까?');">
-            <input type="hidden" name="user_id" value="{{ selected_user }}">
-            <input type="hidden" name="work_date" value="{{ selected_date }}">
-            <button type="submit" class="btn btn-danger">
-              <i class="fas fa-trash"></i> 삭제
-            </button>
-          </form>
-
-          <!-- 🟢 수정 저장 버튼 -->
+        <div class="card-footer text-right">
           <button type="submit" class="btn btn-success">
             <i class="fas fa-save"></i> 수정 저장
           </button>
         </div>
+      </form>
+
+      <form method="POST"
+            action="{{ url_for('admin.delete_worklog') }}"
+            onsubmit="return confirm('정말 이 근무 기록을 삭제하시겠습니까?');"
+            class="p-3 text-right">
+        <input type="hidden" name="user_id" value="{{ selected_user }}">
+        <input type="hidden" name="work_date" value="{{ selected_date }}">
+        <button type="submit" class="btn btn-danger">
+          <i class="fas fa-trash"></i> 삭제
+        </button>
       </form>
     </div>
   </div>
