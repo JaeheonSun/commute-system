@@ -217,7 +217,10 @@ def edit_worklog_by_query():
 @admin_bp.route("/worklog/delete", methods=["POST"])
 def delete_worklog():
     user_id = request.form.get("user_id")
-    work_date = request.form.get("work_date")
+    work_date = datetime.strptime(
+        request.form.get("work_date"),
+        "%Y-%m-%d"
+    ).date()
 
     record = WorkLog.query.filter_by(
         user_id=user_id,
@@ -226,13 +229,13 @@ def delete_worklog():
 
     if not record:
         flash("삭제할 근무 기록이 존재하지 않습니다.", "danger")
-        return redirect(url_for("admin_bp.edit_worklog"))
+        return redirect(url_for("admin.edit_worklog"))
 
     db.session.delete(record)
     db.session.commit()
 
     flash("근무 기록이 삭제되었습니다.", "success")
-    return redirect(url_for("admin_bp.edit_worklog"))
+    return redirect(url_for("admin.edit_worklog"))
 
 
 
