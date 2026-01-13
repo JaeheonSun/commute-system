@@ -97,7 +97,7 @@
 
         <div class="card-footer text-right bg-white">
           <button type="submit" class="btn btn-success">
-            <i class="fas fa-save"></i>저장
+            <i class="fas fa-save"></i> 저장
           </button>
         </div>
       </form>
@@ -105,7 +105,7 @@
         <form method="POST"
             action="{{ url_for('admin.delete_worklog') }}"
             onsubmit="return confirm('정말 이 근무 기록을 삭제하시겠습니까?');"
-            class="card-footer text-right">
+            class="card-footer text-right bg-white">
         <input type="hidden" name="user_id" value="{{ selected_user }}">
         <input type="hidden" name="work_date" value="{{ selected_date }}">
         <button type="submit" class="btn btn-danger">
