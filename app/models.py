@@ -13,10 +13,14 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 class WorkLog(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'work_date', name='uq_worklog_user_date'),
+    )
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     work_date = db.Column(db.Date, nullable=False)
     start_time = db.Column(db.Time, nullable=False)
-    end_time = db.Column(db.Time, nullable=False)
-    total_minutes = db.Column(db.Integer, nullable=False)
-    overtime_minutes = db.Column(db.Integer, nullable=False)
+    end_time = db.Column(db.Time)
+    total_minutes = db.Column(db.Integer)
+    overtime_minutes = db.Column(db.Integer)
