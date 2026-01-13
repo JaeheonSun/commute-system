@@ -26,7 +26,7 @@ def check_in():
         record = Attendance(
             user_id=current_user.id,
             date=today,
-            check_in=now_kst.time()
+            check_in=now_kst().time()
         )
         db.session.add(record)
         db.session.commit()
