@@ -53,9 +53,9 @@ def work_summary():
 
     # 🔹 연도 목록 (드롭다운용)
     years = (
-        db.session.query(extract("year", WorkLog.start_time))
+        db.session.query(extract("year", WorkLog.work_date))
         .distinct()
-        .order_by(extract("year", WorkLog.start_time).desc())
+        .order_by(extract("year", WorkLog.work_date).desc())
         .all()
     )
     years = [int(y[0]) for y in years]
@@ -68,11 +68,11 @@ def work_summary():
             func.sum(WorkLog.overtime_minutes).label("overtime_minutes"),
         )
         .join(WorkLog)
-        .filter(extract("year", WorkLog.start_time) == year)
+        .filter(extract("year", WorkLog.work_date) == year)
     )
 
     if month:
-        query = query.filter(extract("month", WorkLog.start_time) == month)
+        query = query.filter(extract("month", WorkLog.work_date) == month)
 
     results = query.group_by(User.id).all()
 
@@ -124,8 +124,8 @@ def add_worklog():
         worklog = WorkLog(
             user_id=user_id,
             work_date=work_date,
-            start_time=start_dt,
-            end_time=end_dt,
+            start_time=start_t,
+            end_time=end_t,
             total_minutes=0,
             overtime_minutes=0
         )
@@ -192,8 +192,8 @@ def edit_worklog_by_query():
                 flash("퇴근 시간은 출근 시간보다 이후여야 합니다.", "warning")
                 return redirect(request.url)
 
-            record.start_time = start_dt
-            record.end_time = end_dt
+            record.start_time = start_time
+            record.end_time = end_time
 
             calculate_work_time(record)
             db.session.commit()

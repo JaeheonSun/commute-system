@@ -12,7 +12,7 @@ attendance_bp = Blueprint("attendance", __name__)
 @login_required
 def dashboard():
     auto_checkout_if_needed(current_user.id)
-    today = date.today()
+    today = now_kst().date()
     record = WorkLog.query.filter_by(user_id=current_user.id, work_date=today).first()
     return render_template("dashboard.html", record=record)
 
@@ -20,7 +20,7 @@ def dashboard():
 @attendance_bp.route("/check-in")
 @login_required
 def check_in():
-    today = date.today()
+    today = now_kst().date()
     record = WorkLog.query.filter_by(user_id=current_user.id, work_date=today).first()
     if not record:
         record = WorkLog(
@@ -36,7 +36,7 @@ def check_in():
 @attendance_bp.route("/check-out")
 @login_required
 def check_out():
-    today = date.today()
+    today = now_kst().date()
     record = WorkLog.query.filter_by(
         user_id=current_user.id,
         work_date=today
@@ -56,7 +56,7 @@ def check_out():
 
 
 def auto_checkout_if_needed(user_id):
-    yesterday = date.today() - timedelta(days=1)
+    yesterday = now_kst().date() - timedelta(days=1)
 
     record = WorkLog.query.filter(
         WorkLog.user_id == user_id,
