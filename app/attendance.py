@@ -66,7 +66,7 @@ def auto_checkout_if_needed(user_id):
     ).first()
 
     if record:
-        check_in_dt = datetime.combine(record.date, record.start_time)
+        check_in_dt = datetime.combine(record.work_date, record.start_time)
 
         end_dt = check_in_dt + timedelta(hours=9)
 
