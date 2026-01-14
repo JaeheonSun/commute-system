@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
-from datetime import date, datetime, timedelta
+from datetime import time, datetime, timedelta
 from .models import WorkLog
 from .services import calculate_work_minutes, now_kst
 
@@ -70,7 +70,11 @@ def auto_checkout_if_needed(user_id):
 
         end_dt = check_in_dt + timedelta(hours=9)
 
-        record.end_time = end_dt.time()
+        if end_dt.date() > record.work_date:
+        # 자정 넘어가면 23:59로 고정
+            record.end_time = time(23, 59)
+        else:
+            record.end_time = end_dt.time()
 
         record.total_minutes, record.overtime_minutes = calculate_work_minutes(
             record.start_time, record.end_time, record.work_date
