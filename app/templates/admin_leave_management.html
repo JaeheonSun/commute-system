@@ -1,0 +1,265 @@
+{% extends "admin_base.html" %}
+
+{% block title %}휴가 관리{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+<style>
+  #calendar { font-size: 0.85rem; }
+  .fc-event { cursor: pointer; }
+  .legend-dot { display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:4px; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- 달력 -->
+<div class="row">
+  <div class="col-md-12">
+    <div class="card card-primary">
+      <div class="card-header d-flex align-items-center">
+        <h3 class="card-title mr-3">휴가 현황 달력</h3>
+        <span>
+          <span class="legend-dot" style="background:#f39c12"></span>연차
+          <span class="legend-dot ml-2" style="background:#2980b9"></span>특별휴가
+          <span class="legend-dot ml-2" style="background:#8e44ad"></span>대체휴무
+        </span>
+      </div>
+      <div class="card-body">
+        <div id="calendar"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 등록 / 취소 폼 -->
+<div class="row">
+
+  <!-- 휴가 등록 -->
+  <div class="col-md-6">
+    <div class="card card-success">
+      <div class="card-header"><h3 class="card-title">휴가 등록</h3></div>
+      <form method="POST" action="{{ url_for('admin.add_leave') }}">
+        <div class="card-body">
+
+          <!-- 직원 선택 -->
+          <div class="form-group">
+            <label class="font-weight-bold">직원 선택</label>
+            <div class="mb-1">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="add-select-all"
+                       onchange="toggleAll(this, '.add-user-cb')">
+                <label class="custom-control-label font-weight-bold" for="add-select-all">전체 선택</label>
+              </div>
+            </div>
+            <div style="max-height:140px;overflow-y:auto;border:1px solid #ced4da;border-radius:4px;padding:8px">
+              {% for u in users %}
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input add-user-cb"
+                       id="add-u{{ u.id }}" name="user_ids" value="{{ u.id }}">
+                <label class="custom-control-label" for="add-u{{ u.id }}">{{ u.username }}</label>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- 휴가 유형 -->
+          <div class="form-group">
+            <label class="font-weight-bold">휴가 유형</label>
+            <select name="work_type" class="form-control">
+              <option value="annual_leave">연차</option>
+              <option value="special_leave">특별휴가</option>
+              <option value="substitute_leave">대체휴무</option>
+            </select>
+          </div>
+
+          <!-- 날짜 모드 -->
+          <div class="form-group">
+            <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+              <label class="btn btn-outline-secondary active w-50">
+                <input type="radio" name="mode" value="single" checked
+                       onchange="toggleMode(this,'add')"> 단일 날짜
+              </label>
+              <label class="btn btn-outline-secondary w-50">
+                <input type="radio" name="mode" value="range"
+                       onchange="toggleMode(this,'add')"> 기간 선택
+              </label>
+            </div>
+          </div>
+
+          <div id="add-single">
+            <div class="form-group">
+              <label>날짜</label>
+              <input type="date" name="leave_date" id="add-leave-date" class="form-control" required>
+            </div>
+          </div>
+          <div id="add-range" style="display:none">
+            <div class="form-group">
+              <label>시작일</label>
+              <input type="date" name="start_date" id="add-start" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>종료일</label>
+              <input type="date" name="end_date" id="add-end" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group mb-0">
+            <label>비고</label>
+            <input type="text" name="remarks" class="form-control" placeholder="사유 (선택)">
+          </div>
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-plus-circle"></i> 휴가 등록
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 휴가 취소 -->
+  <div class="col-md-6">
+    <div class="card card-danger">
+      <div class="card-header"><h3 class="card-title">휴가 취소</h3></div>
+      <form method="POST" action="{{ url_for('admin.cancel_leave') }}"
+            onsubmit="return confirm('선택한 직원의 해당 날짜 휴가 기록을 삭제하시겠습니까?')">
+        <div class="card-body">
+
+          <!-- 직원 선택 -->
+          <div class="form-group">
+            <label class="font-weight-bold">직원 선택</label>
+            <div class="mb-1">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="cancel-select-all"
+                       onchange="toggleAll(this, '.cancel-user-cb')">
+                <label class="custom-control-label font-weight-bold" for="cancel-select-all">전체 선택</label>
+              </div>
+            </div>
+            <div style="max-height:140px;overflow-y:auto;border:1px solid #ced4da;border-radius:4px;padding:8px">
+              {% for u in users %}
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input cancel-user-cb"
+                       id="cancel-u{{ u.id }}" name="user_ids" value="{{ u.id }}">
+                <label class="custom-control-label" for="cancel-u{{ u.id }}">{{ u.username }}</label>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- 날짜 모드 -->
+          <div class="form-group">
+            <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+              <label class="btn btn-outline-secondary active w-50">
+                <input type="radio" name="mode" value="single" checked
+                       onchange="toggleMode(this,'cancel')"> 단일 날짜
+              </label>
+              <label class="btn btn-outline-secondary w-50">
+                <input type="radio" name="mode" value="range"
+                       onchange="toggleMode(this,'cancel')"> 기간 선택
+              </label>
+            </div>
+          </div>
+
+          <div id="cancel-single">
+            <div class="form-group">
+              <label>날짜</label>
+              <input type="date" name="leave_date" id="cancel-leave-date" class="form-control" required>
+            </div>
+          </div>
+          <div id="cancel-range" style="display:none">
+            <div class="form-group">
+              <label>시작일</label>
+              <input type="date" name="start_date" id="cancel-start" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>종료일</label>
+              <input type="date" name="end_date" id="cancel-end" class="form-control">
+            </div>
+          </div>
+
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash"></i> 휴가 취소
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<!-- 이벤트 상세 모달 -->
+<div class="modal fade" id="eventModal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">휴가 상세</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>직원:</strong> <span id="modal-username"></span></p>
+        <p><strong>날짜:</strong> <span id="modal-date"></span></p>
+        <p><strong>유형:</strong> <span id="modal-type"></span></p>
+        <p class="mb-0" id="modal-remarks-row"><strong>비고:</strong> <span id="modal-remarks"></span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ko.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+    initialView: 'dayGridMonth',
+    locale: 'ko',
+    height: 'auto',
+    headerToolbar: {
+      left:   'prev,next today',
+      center: 'title',
+      right:  'dayGridMonth,dayGridWeek'
+    },
+    events: {{ events_json | safe }},
+    eventClick: function(info) {
+      var p = info.event.extendedProps;
+      document.getElementById('modal-username').textContent = p.username;
+      document.getElementById('modal-date').textContent     = info.event.startStr;
+      document.getElementById('modal-type').textContent     = p.work_type;
+      var remarksRow = document.getElementById('modal-remarks-row');
+      if (p.remarks) {
+        document.getElementById('modal-remarks').textContent = p.remarks;
+        remarksRow.style.display = '';
+      } else {
+        remarksRow.style.display = 'none';
+      }
+      $('#eventModal').modal('show');
+    }
+  });
+  calendar.render();
+});
+
+function toggleMode(radio, prefix) {
+  var single = radio.value === 'single';
+  document.getElementById(prefix + '-single').style.display = single ? '' : 'none';
+  document.getElementById(prefix + '-range').style.display  = single ? 'none' : '';
+  document.getElementById(prefix + '-leave-date').required  = single;
+  document.getElementById(prefix + '-start').required = !single;
+  document.getElementById(prefix + '-end').required   = !single;
+}
+
+function toggleAll(master, selector) {
+  document.querySelectorAll(selector).forEach(function(cb) {
+    cb.checked = master.checked;
+  });
+}
+
+// 초기 required 설정
+document.getElementById('add-leave-date').required    = true;
+document.getElementById('cancel-leave-date').required = true;
+</script>
+{% endblock %}

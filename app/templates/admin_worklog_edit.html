@@ -22,10 +22,12 @@
                 <label>직원</label>
                 <select name="user_id" class="form-control" required>
                   {% for u in users %}
+                  {% if u.username != "peabodu509" %}
                   <option value="{{ u.id }}"
                     {% if selected_user == u.id %}selected{% endif %}>
                     {{ u.username }}
                   </option>
+                  {% endif %}
                   {% endfor %}
                 </select>
               </div>
@@ -69,6 +71,20 @@
 
         <div class="card-body">
           <div class="row">
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>근무 형태</label>
+                <select name="work_type" class="form-control">
+                  <option value="office" {% if record.work_type == 'office' %}selected{% endif %}>재단근무</option>
+                  <option value="remote" {% if record.work_type == 'remote' %}selected{% endif %}>재택근무</option>
+                  <option value="flexible" {% if record.work_type == 'flexible' %}selected{% endif %}>시차(유연근무)</option>
+                  <option value="annual_leave" {% if record.work_type == 'annual_leave' %}selected{% endif %}>연차</option>
+                  <option value="half_day" {% if record.work_type == 'half_day' %}selected{% endif %}>반차</option>
+                  <option value="special_leave" {% if record.work_type == 'special_leave' %}selected{% endif %}>특별휴가</option>
+                  <option value="substitute_leave" {% if record.work_type == 'substitute_leave' %}selected{% endif %}>대체휴무</option>
+                </select>
+              </div>
+            </div>
 
             <div class="col-md-3">
               <div class="form-group">
@@ -76,8 +92,7 @@
                 <input type="time"
                        name="start_time"
                        class="form-control"
-                       value="{{ record.start_time.strftime('%H:%M') }}"
-                       required>
+                       value="{{ record.start_time.strftime('%H:%M') if record.start_time else '' }}">
               </div>
             </div>
 
@@ -87,8 +102,14 @@
                 <input type="time"
                        name="end_time"
                        class="form-control"
-                       value="{{ record.end_time.strftime('%H:%M') if record.end_time else '' }}"
-                       required>
+                       value="{{ record.end_time.strftime('%H:%M') if record.end_time else '' }}">
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>비고</label>
+                <input type="text" name="remarks" class="form-control" value="{{ record.remarks or '' }}">
               </div>
             </div>
 

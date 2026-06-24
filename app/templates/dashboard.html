@@ -4,89 +4,439 @@
   <meta charset="UTF-8">
   <title>출퇴근 대시보드</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    :root {
+      --blue:     #2563eb;
+      --blue-700: #1d4ed8;
+      --blue-50:  #eff6ff;
+      --green:    #059669;
+      --red:      #dc2626;
+      --amber:    #d97706;
+      --surface:  #ffffff;
+      --bg:       #f1f5f9;
+      --border:   #e2e8f0;
+      --text:     #0f172a;
+      --muted:    #64748b;
+    }
 
-  <!-- Bootstrap 4 (AdminLTE와 동일 계열) -->
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    *, *::before, *::after { box-sizing: border-box; }
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    body {
+      margin: 0;
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    /* ── Navbar ───────────────────────────────── */
+    .top-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .top-nav .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .top-nav .brand:hover { text-decoration: none; color: var(--text); }
+    .brand-dot {
+      width: 24px; height: 24px;
+      background: var(--blue);
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 0.65rem;
+    }
+    .nav-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-username {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .nav-username span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+    /* ── Page body ────────────────────────────── */
+    .page-body {
+      padding: 28px 16px;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    /* ── Cards ────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .card-header-bar {
+      padding: 13px 20px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-header-bar i { color: var(--muted); font-size: 0.85rem; }
+    .card-body-pad { padding: 20px; }
+
+    /* ── Alerts ────────────────────────────────── */
+    .alert {
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      padding: 11px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .alert-success { background: #ecfdf5; color: #065f46; }
+    .alert-warning { background: #fffbeb; color: #78350f; }
+    .alert-danger  { background: #fef2f2; color: #991b1b; }
+    .alert-dismissible .close { padding: 8px 12px; color: inherit; opacity: 0.6; }
+
+    /* ── Status info table ─────────────────────── */
+    .info-table { width: 100%; }
+    .info-table tr td { padding: 7px 0; vertical-align: top; font-size: 0.875rem; }
+    .info-table tr td:first-child {
+      width: 90px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding-top: 9px;
+    }
+    .info-table tr + tr td { border-top: 1px solid var(--border); }
+
+    /* ── Work type badge ───────────────────────── */
+    .wtype-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: var(--blue-50);
+      color: var(--blue);
+    }
+
+    /* ── Time display ──────────────────────────── */
+    .time-val {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    /* ── Forms ────────────────────────────────── */
+    .field-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+    .field-label .req { color: var(--red); margin-left: 2px; }
+    .form-input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font-size: 0.875rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      background: #fff;
+      margin-bottom: 14px;
+    }
+    .form-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+    select.form-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+    /* ── Buttons ───────────────────────────────── */
+    .btn-main {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      text-align: center;
+      letter-spacing: 0.01em;
+      margin-top: 4px;
+    }
+    .btn-main:active { transform: scale(0.99); }
+    .btn-checkin  { background: var(--green); color: #fff; }
+    .btn-checkin:hover  { background: #047857; }
+    .btn-checkout { background: var(--red); color: #fff; }
+    .btn-checkout:hover { background: #b91c1c; }
+    .btn-save {
+      padding: 8px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text);
+      transition: background 0.12s, border-color 0.12s;
+      white-space: nowrap;
+    }
+    .btn-save:hover { background: var(--blue-50); border-color: var(--blue); color: var(--blue); }
+    .btn-leave {
+      display: block;
+      width: 100%;
+      padding: 11px;
+      background: var(--amber);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 4px;
+    }
+    .btn-leave:hover { background: #b45309; }
+
+    /* ── Remarks inline edit ───────────────────── */
+    .remarks-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .remarks-row .form-input { margin-bottom: 0; flex: 1; }
+
+    /* ── Mode toggle ───────────────────────────── */
+    .mode-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .mode-toggle label {
+      flex: 1;
+      margin: 0;
+      padding: 8px;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--surface);
+      color: var(--muted);
+      border: none;
+      transition: background 0.12s, color 0.12s;
+    }
+    .mode-toggle input[type=radio] { display: none; }
+    .mode-toggle input[type=radio]:checked + label {
+      background: var(--blue);
+      color: #fff;
+    }
+    .mode-toggle label:first-of-type { border-right: 1px solid var(--border); }
+
+    /* ── Done state ────────────────────────────── */
+    .done-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px;
+      background: #ecfdf5;
+      border-radius: 8px;
+      color: #065f46;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .done-box i { font-size: 1.1rem; }
+
+    /* ── Empty state ────────────────────────────── */
+    .empty-msg {
+      text-align: center;
+      padding: 8px 0 16px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* ── Section divider ────────────────────────── */
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 18px 0;
+    }
+  </style>
 </head>
+<body>
 
-<body class="bg-light">
-
-<!-- 🔹 Navbar -->
-<nav class="navbar navbar-expand navbar-white bg-white shadow-sm px-3">
-  <span class="navbar-brand font-weight-bold">
+<!-- Navbar -->
+<nav class="top-nav">
+  <a href="#" class="brand">
+    <div class="brand-dot"><i class="fas fa-clock"></i></div>
     출퇴근 관리 시스템
-  </span>
-
-  <div class="ml-auto d-flex align-items-center">
-    {% if current_user.is_authenticated and current_user.role == "admin" %}
-      <a href="{{ url_for('admin.dashboard') }}" class="btn btn-warning btn-sm mr-2">
-        관리자 페이지
+  </a>
+  <div class="nav-right">
+    <span class="nav-username">
+      <span>안녕하세요,</span>{{ current_user.username }}님
+    </span>
+    {% if current_user.role == "admin" %}
+      <a href="{{ url_for('admin.dashboard') }}"
+         style="font-size:0.78rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;color:var(--text);text-decoration:none;font-weight:600;">
+        <i class="fas fa-cog mr-1"></i>관리자
       </a>
     {% endif %}
-
-    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-secondary btn-sm">
+    <a href="{{ url_for('auth.logout') }}"
+       style="font-size:0.78rem;padding:5px 10px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none;">
       로그아웃
     </a>
   </div>
 </nav>
 
-<!-- 🔹 Main -->
-<div class="container mt-4">
+<div class="page-body">
 
-  <!-- 인사 카드 -->
-  <div class="card mb-3">
-    <div class="card-body">
-      <h5 class="mb-0">
-        👋 안녕하세요, <strong>{{ current_user.username }}</strong>님
-      </h5>
-    </div>
-  </div>
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+          <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+          <span>{{ message }}</span>
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 
-  <!-- 오늘 근무 상태 -->
-  <div class="card text-center">
-    <div class="card-header bg-primary text-white">
+  {% set type_labels = {
+    'office':           '재단근무',
+    'remote':           '재택근무',
+    'flexible':         '유연근무(시차)',
+    'half_day':         '반차',
+    'annual_leave':     '연차',
+    'special_leave':    '특별휴가',
+    'substitute_leave': '대체휴무'
+  } %}
+
+  <!-- ── 오늘의 출퇴근 카드 ───────────────────── -->
+  <div class="card">
+    <div class="card-header-bar">
+      <i class="fas fa-calendar-day"></i>
       오늘의 출퇴근 기록
     </div>
 
-    <div class="card-body">
+    <div class="card-body-pad">
 
       {% if not record %}
-        <p class="text-muted mb-3">
-          아직 출근 기록이 없습니다.
-        </p>
-        <a href="{{ url_for('attendance.check_in') }}"
-           class="btn btn-success btn-lg">
-          <i class="fas fa-sign-in-alt"></i> 출근
-        </a>
+
+        <p class="empty-msg">아직 출근 기록이 없습니다.</p>
+
+        <form method="post" action="{{ url_for('attendance.check_in') }}">
+          <label class="field-label">근무 형태 <span class="req">*</span></label>
+          <select name="work_type" class="form-input" required>
+            <option value="office">재단근무</option>
+            <option value="remote">재택근무</option>
+            <option value="flexible">유연근무(시차)</option>
+            <option value="half_day">반차</option>
+          </select>
+
+          <label class="field-label">비고</label>
+          <input type="text" name="remarks" class="form-input"
+                 placeholder="근무 관련 내용을 입력하세요 (선택)">
+
+          <button type="submit" class="btn-main btn-checkin">
+            <i class="fas fa-sign-in-alt mr-1"></i> 출근하기
+          </button>
+        </form>
 
       {% else %}
-        <p class="mb-2">
-          ⏰ 출근 시간 :
-          <strong>
-            {{ record.start_time.strftime('%H:%M:%S') if record.start_time }}
-          </strong>
-        </p>
+
+        <table class="info-table">
+          <tr>
+            <td>근무 형태</td>
+            <td><span class="wtype-badge">{{ type_labels.get(record.work_type, record.work_type or '-') }}</span></td>
+          </tr>
+          <tr>
+            <td>출근 시간</td>
+            <td>
+              {% if record.start_time %}
+                <span class="time-val">{{ record.start_time.strftime('%H:%M') }}</span>
+              {% else %}-{% endif %}
+            </td>
+          </tr>
+          {% if record.end_time %}
+          <tr>
+            <td>퇴근 시간</td>
+            <td><span class="time-val">{{ record.end_time.strftime('%H:%M') }}</span></td>
+          </tr>
+          {% endif %}
+          {% if record.remarks %}
+          <tr>
+            <td>비고</td>
+            <td>{{ record.remarks }}</td>
+          </tr>
+          {% endif %}
+        </table>
 
         {% if not record.end_time %}
-          <a href="{{ url_for('attendance.check_out') }}"
-             class="btn btn-danger btn-lg mt-2">
-            <i class="fas fa-sign-out-alt"></i> 퇴근
-          </a>
+
+          <div class="section-divider"></div>
+
+          <form method="post" action="{{ url_for('attendance.update_remarks') }}">
+            <label class="field-label">비고 수정</label>
+            <div class="remarks-row">
+              <input type="text" name="remarks" class="form-input"
+                     value="{{ record.remarks or '' }}"
+                     placeholder="근무 관련 내용 (선택)">
+              <button type="submit" class="btn-save">
+                <i class="fas fa-save mr-1"></i>저장
+              </button>
+            </div>
+          </form>
+
+          <form method="post" action="{{ url_for('attendance.check_out') }}">
+            <button type="submit" class="btn-main btn-checkout">
+              <i class="fas fa-sign-out-alt mr-1"></i> 퇴근하기
+            </button>
+          </form>
+
         {% else %}
-          <p class="mt-3 text-success">
-            ✅ 퇴근 완료
-          </p>
-          <p>
-            ⏰ 퇴근 시간 :
-            <strong>
-              {{ record.end_time.strftime('%H:%M:%S') }}
-            </strong>
-          </p>
+
+          <div class="section-divider"></div>
+          <div class="done-box">
+            <i class="fas fa-check-circle"></i>
+            오늘 근무가 완료되었습니다.
+          </div>
+
         {% endif %}
 
       {% endif %}
@@ -94,7 +444,63 @@
     </div>
   </div>
 
+  <!-- ── 연차 신청 카드 ─────────────────────────── -->
+  <div class="card">
+    <div class="card-header-bar">
+      <i class="fas fa-calendar-minus"></i>
+      연차 신청
+    </div>
+
+    <div class="card-body-pad">
+      <form method="post" action="{{ url_for('attendance.apply_leave') }}" id="leave-form">
+
+        <div class="mode-toggle">
+          <input type="radio" name="mode" id="mode-single" value="single" checked>
+          <label for="mode-single">단일 날짜</label>
+          <input type="radio" name="mode" id="mode-range" value="range">
+          <label for="mode-range">기간 선택</label>
+        </div>
+
+        <div id="field-single">
+          <label class="field-label">연차 날짜 <span class="req">*</span></label>
+          <input type="date" name="leave_date" id="leave_date" class="form-input" required>
+        </div>
+
+        <div id="field-range" style="display:none">
+          <label class="field-label">시작일 <span class="req">*</span></label>
+          <input type="date" name="start_date" id="start_date" class="form-input">
+          <label class="field-label">종료일 <span class="req">*</span></label>
+          <input type="date" name="end_date" id="end_date" class="form-input">
+        </div>
+
+        <label class="field-label">비고</label>
+        <input type="text" name="remarks" class="form-input" placeholder="사유를 입력하세요 (선택)">
+
+        <button type="submit" class="btn-leave">
+          <i class="fas fa-calendar-minus mr-1"></i> 연차 신청
+        </button>
+
+      </form>
+    </div>
+  </div>
+
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  var modeRadios = document.querySelectorAll('input[name="mode"]');
+  modeRadios.forEach(function(r) {
+    r.addEventListener('change', function() {
+      var single = this.value === 'single';
+      document.getElementById('field-single').style.display = single ? '' : 'none';
+      document.getElementById('field-range').style.display  = single ? 'none' : '';
+      document.getElementById('leave_date').required  = single;
+      document.getElementById('start_date').required  = !single;
+      document.getElementById('end_date').required    = !single;
+    });
+  });
+  document.getElementById('leave_date').required = true;
+</script>
 </body>
 </html>

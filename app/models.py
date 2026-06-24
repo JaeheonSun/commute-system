@@ -21,7 +21,11 @@ class WorkLog(db.Model):
     user_id = db.Column(db.Integer)
     username = db.Column(db.String(50))
     work_date = db.Column(db.Date, nullable=False)
-    start_time = db.Column(db.Time, nullable=False)
+    # start_time/end_time may be null for leave-type records
+    start_time = db.Column(db.Time)
     end_time = db.Column(db.Time)
     total_minutes = db.Column(db.Integer)
     overtime_minutes = db.Column(db.Integer)
+    # New fields to support different work types and remarks
+    work_type = db.Column(db.String(30))
+    remarks = db.Column(db.String(255))

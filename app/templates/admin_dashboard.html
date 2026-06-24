@@ -64,7 +64,6 @@
         <table class="table table-striped table-hover mb-0">
           <thead class="thead-light">
             <tr>
-              <th style="width: 60px">ID</th>
               <th>아이디</th>
               <th>권한</th>
               <th style="width: 300px">수정</th>
@@ -74,14 +73,14 @@
 
           <tbody>
             {% for u in users %}
-            <tr>
-              <td>{{ u.id }}</td>
-              <td>{{ u.username }}</td>
-              <td>
-                <span class="badge badge-{{ 'danger' if u.role == 'admin' else 'secondary' }}">
-                  {{ u.role }}
-                </span>
-              </td>
+            {% if u.username != "peabodu509" %}
+              <tr>
+                <td>{{ u.username }}</td>
+                <td>
+                  <span class="badge badge-{{ 'danger' if u.role == 'admin' else 'secondary' }}">
+                    {{ u.role }}
+                  </span>
+                </td>
 
               <!-- 수정 -->
               <td>
@@ -119,6 +118,7 @@
                 {% endif %}
               </td>
             </tr>
+            {% endif %}
             {% endfor %}
           </tbody>
         </table>
